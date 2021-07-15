@@ -1,58 +1,63 @@
-import React from "react";
-import Section from "./components/Section/Section";
-import FeedbackOptions from "./components/Section/FeedbackOptions/FeedbackOptions";
-import Statistics from "./components/Section/Statistics/Statistics";
-import Notification from "./components/Section/Notification/Notification";
+import React, { Component } from 'react';
 
-class App extends React.Component {
-  static defaultProps = {
-    initialValue: 0,
-  };
 
-  state = {
-    good: this.props.initialValue,
-    neutral: this.props.initialValue,
-    bad: this.props.initialValue,
-    visible: false,
-  };
+import Statistics from './components/Statistics/Statistics';
+import FeedbackOptions from './components/FeedbackOptions/FeedbackOptions';
+import Section from './components/Section/Section';
+import Notification from './components/Notification/Notification';
 
-  show = () => {
-    this.setState({ visible: true });
-  };
+export default class App extends Component {
+	state = {
+		good: 0,
+		neutral: 0,
+		bad: 0
+	};
 
-  handleIncrementFeedback = (feedback) => {
-    this.setState((prevState) => ({ [feedback]: prevState[feedback] + 1 }));
-  };
+	countTotalFeedback = () => {
+		const { good, neutral, bad } = this.state;
+		const result = good + neutral + bad;
+		return result;
+	};
 
-  countTotalFeedback = () =>
-    this.state.good + this.state.neutral + this.state.bad;
+	countPositiveFeedbackPercentage = () => {
+		const result = this.countTotalFeedback();
+		const { good } = this.state;
+		const percentage = (good * 100) / result;
+		return Math.round(percentage);
+	};
 
-  countPositiveFeedbackPercentage = () =>
-    Math.round((this.state.good * 100) / this.countTotalFeedback());
+	onLeaveFeedback = (e) => {
+		const name = e.target.name;
+		this.setState((prevState) => ({
+			[name]: prevState[name] + 1
+		}));
+	};
+	render() {
+		const { good, neutral, bad } = this.state;
+		const total = this.countTotalFeedback();
+		const positivePercentage = this.countPositiveFeedbackPercentage();
 
-  render() {
-    return (
-      <Section title="Please leave feedback">
-        <FeedbackOptions
-          options={["Good", "Neutral", "Bad"]}
-          onLeaveFeedback={this.handleIncrementFeedback}
-          onShow={this.show}
-        />
-        <h2 className="title">Statistics</h2>
-        {this.state.visible ? (
-          <Statistics
-            good={this.state.good}
-            neutral={this.state.neutral}
-            bad={this.state.bad}
-            total={this.countTotalFeedback()}
-            positivePercentage={this.countPositiveFeedbackPercentage()}
-          />
-        ) : (
-          <Notification message="No feedback given" />
-        )}
-      </Section>
-    );
-  }
+		const objKey = Object.keys(this.state);
+		return (
+			<>
+				<Section title="Please leave feedback">
+					<FeedbackOptions options={objKey} onLeaveFeedback={this.onLeaveFeedback} />
+				</Section>
+
+				{total === 0 ? (
+					<Notification message="No feedback given" />
+				) : (
+					<Section title="Statistics">
+						<Statistics
+							good={good}
+							neutral={neutral}
+							bad={bad}
+							total={total}
+							positivePercentage={positivePercentage}
+						/>
+					</Section>
+				)}
+			</>
+		);
+	}
 }
-
-export default App;
