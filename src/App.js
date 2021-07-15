@@ -1,8 +1,8 @@
 import React from "react";
-import Section from "./components/Section";
-import FeedbackOptions from "./components/FeedbackOptions/FeedbackOptions";
-import Statistics from "./components/Statistics/Statistics";
-import Notification from "./components/Notification/Notification";
+import Section from "./components/Section/Section";
+import FeedbackOptions from "./components/Section/FeedbackOptions/FeedbackOptions";
+import Statistics from "./components/Section/Statistics/Statistics";
+import Notification from "./components/Section/Notification/Notification";
 
 class App extends React.Component {
   static defaultProps = {
